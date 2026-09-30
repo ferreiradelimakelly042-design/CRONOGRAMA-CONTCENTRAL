@@ -2091,5 +2091,36 @@ adapters.forEach(ad=>{
 }catch(err){console.error('[Seleção de células] erro ao iniciar:',err);}
 })();
 </script>
+<script>
+/* ===== Navegação robusta entre módulos =====
+   Mantém os três módulos mutuamente exclusivos mesmo se algum renderizador
+   lançar erro durante a troca. */
+(function(){
+  function showModule(mod){
+    const fiscal=document.getElementById('mod-fiscal');
+    const cont=document.getElementById('mod-cont');
+    const anual=document.getElementById('mod-anual');
+    const tabs=document.querySelectorAll('.mod-tab[data-mod]');
+    tabs.forEach(t=>t.classList.toggle('active',t.dataset.mod===mod));
+    if(fiscal) fiscal.style.display=(mod==='fiscal')?'block':'none';
+    if(cont) cont.style.display=(mod==='cont')?'block':'none';
+    if(anual) anual.style.display=(mod==='anual')?'block':'none';
+    if(mod==='fiscal'){
+      try{ if(typeof buildFilterOptions==='function') buildFilterOptions(); if(typeof renderAll==='function') renderAll(); }catch(e){console.error('[Módulo Mensal]',e);}
+    } else if(mod==='cont'){
+      try{ if(typeof contBuildFilterOptions==='function') contBuildFilterOptions(); if(typeof contRenderAll==='function') contRenderAll(); }catch(e){console.error('[Módulo Contabilidade]',e);}
+    } else if(mod==='anual'){
+      try{ if(typeof renderAnualTabs==='function') renderAnualTabs(); if(typeof renderAnual==='function') renderAnual(); if(typeof updateAnualDeleteButton==='function') updateAnualDeleteButton(); }catch(e){console.error('[Módulo Anual]',e);}
+    }
+  }
+  window.showModule=showModule;
+  function bind(){
+    document.querySelectorAll('.mod-tab[data-mod]').forEach(tab=>{
+      tab.onclick=function(e){e.preventDefault();e.stopPropagation();showModule(tab.dataset.mod);};
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
+})();
+</script>
 </body>
 </html>
