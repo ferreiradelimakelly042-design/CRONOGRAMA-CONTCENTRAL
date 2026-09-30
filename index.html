@@ -1400,6 +1400,31 @@ function normalizeTempo(v){
     }
   });
 
+  // ===== NAVEGAÇÃO ENTRE MÓDULOS =====
+  // Os botões .mod-tab tinham apenas data-mod, mas não havia o listener
+  // principal que alternava os três módulos.
+  document.querySelectorAll('.mod-tab[data-mod]').forEach(tab => {
+    tab.addEventListener('click', function() {
+      const mod = this.dataset.mod;
+      document.querySelectorAll('.mod-tab[data-mod]').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+
+      const fiscal = document.getElementById('mod-fiscal');
+      const cont = document.getElementById('mod-cont');
+      const anual = document.getElementById('mod-anual');
+      if (fiscal) fiscal.style.display = mod === 'fiscal' ? '' : 'none';
+      if (cont) cont.style.display = mod === 'cont' ? '' : 'none';
+      if (anual) anual.style.display = mod === 'anual' ? '' : 'none';
+
+      if (mod === 'cont' && typeof contRenderAll === 'function') contRenderAll();
+      if (mod === 'anual') {
+        if (typeof renderAnualTabs === 'function') renderAnualTabs();
+        if (typeof renderAnual === 'function') renderAnual();
+        if (typeof updateAnualDeleteButton === 'function') updateAnualDeleteButton();
+      }
+    });
+  });
+
   // Hook into main mod-tab switching to render when anual tab is opened
   const origModTab = window._modTabSetup;
   document.addEventListener('click', function(e) {
