@@ -515,6 +515,19 @@ const LS_DATA='cronograma_mensal_nova_empresa_v1';
 const LS_USERS='cronograma_users_v1';
 const LS_SESSION='cronograma_session_v1';
 const LS_CW='cronograma_mensal_colwidths_v1';
+// Larguras padrão das colunas do Cronograma Mensal.
+// Esta constante precisa existir antes de loadCW(), pois state é inicializado logo depois.
+const COL_WIDTH_DEFAULTS={
+  empresa:220,
+  rt:90,
+  cidade:140,
+  mes:110,
+  atividade:280,
+  prazo:120,
+  responsavel:160,
+  status:120
+};
+function colWidth(key){return Number(state&&state.colWidths&&state.colWidths[key])||COL_WIDTH_DEFAULTS[key]||120;}
 function loadData(){try{const raw=localStorage.getItem(LS_DATA);if(raw!==null){const rows=JSON.parse(raw)||[];return rows.map(r=>Object.assign({status:'PENDENTE',mes:''},r,{status:normalizeStatus(r.status)}));}}catch(e){}const seed=INITIAL_MONTHLY_DATA.map(r=>Object.assign({mes:''},r,{status:normalizeStatus(r.status)}));try{localStorage.setItem(LS_DATA,JSON.stringify(seed));}catch(e){}return seed;}
 function saveData(){try{localStorage.setItem(LS_DATA,JSON.stringify(state.data));}catch(e){} if(window.fbAuth&&window.fbAuth.currentUser) window.fbWrite('mensal',{rows:state.data}).catch(console.error);}
 function loadUsers(){try{const u=JSON.parse(localStorage.getItem(LS_USERS));return Array.isArray(u)?u:[];}catch(e){return[];}}
